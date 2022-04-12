@@ -39,7 +39,7 @@ public class RouteByCurrencyRouter extends RouteBuilder {
         .maximumRedeliveries(0)
         .handled(true)
         .setBody(simple("${body.replaceAll(\"<tns:Currency>[\\s\\S]*?<\\/tns:Currency>\", \"<tns:Currency>???</tns:Currency>\")}"))
-        .log(LoggingLevel.INFO, "%%% MyFunctionalException 2 handled.")
+        .log(LoggingLevel.INFO, "%%% MyFunctional Exception 2 handled.")
         .to(unknownCurrencyXml);
 
         from(sourceUri).routeId("cbr")
