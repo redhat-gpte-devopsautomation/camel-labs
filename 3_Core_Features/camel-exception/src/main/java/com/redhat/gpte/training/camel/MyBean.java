@@ -21,7 +21,10 @@ public class MyBean {
            counter++;
            logger.info(">>>> Exception created for : " + payment + ", counter = " + counter);
            throw new Exception("===> Exception created");
-        }
+        } else {
+            logger.info(">>>> Exception created for : " + payment);
+            throw new MyFunctionalException2(">>>> MyFunctionalException created.  Unknown currency...");
+         } 
 
     }
 

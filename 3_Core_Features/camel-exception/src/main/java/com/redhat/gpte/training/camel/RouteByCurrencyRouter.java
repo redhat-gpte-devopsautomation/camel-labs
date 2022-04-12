@@ -15,8 +15,8 @@ public class RouteByCurrencyRouter extends RouteBuilder {
     @EndpointInject(ref = "sourceDirectoryXml")
     Endpoint sourceUri;
 
-    @EndpointInject(ref = "moneyUriXml")
-    Endpoint moneyUriXml;
+    @EndpointInject(ref = "unknownCurrencyXml")
+    Endpoint unknownCurrencyXml;
 
     @EndpointInject(ref = "directErrorHandler")
     Endpoint directErrorHandler;
@@ -34,6 +34,13 @@ public class RouteByCurrencyRouter extends RouteBuilder {
                 .maximumRedeliveries(0)
                 .handled(true)
                 .log(LoggingLevel.INFO, "%%% MyFunctional Exception handled.");
+        
+        onException(MyFunctionalException2.class).routeId("myfunctional-exception-2")
+        .maximumRedeliveries(0)
+        .handled(true)
+        .setBody(simple("${body.replaceAll(\"<tns:Currency>[\\s\\S]*?<\\/tns:Currency>\", \"<tns:Currency>???</tns:Currency>\")}"))
+        .log(LoggingLevel.INFO, "%%% Another MyFunctional Exception handled.")
+        .to(unknownCurrencyXml);
 
         from(sourceUri).routeId("cbr")
         .convertBodyTo(String.class)
@@ -53,7 +60,8 @@ public class RouteByCurrencyRouter extends RouteBuilder {
                     .to( directErrorHandler )
                 .otherwise()
                     .log(LoggingLevel.INFO, "This is an Other Currency XML Payment: ${file:onlyname}" )
-                    .to( moneyUriXml );
+                    .setHeader("Payment").simple("UNK")
+                    .to(directErrorHandlerWithException);
 
 
         from(directErrorHandlerWithException).routeId("direct-error-handler-with-exception")
@@ -78,6 +86,13 @@ public class RouteByCurrencyRouter extends RouteBuilder {
 class MyFunctionalException extends Exception {
 
     public MyFunctionalException(String message) {
+        super(message);
+    }
+}
+
+class MyFunctionalException2 extends Exception {
+
+    public MyFunctionalException2(String message) {
         super(message);
     }
 }
