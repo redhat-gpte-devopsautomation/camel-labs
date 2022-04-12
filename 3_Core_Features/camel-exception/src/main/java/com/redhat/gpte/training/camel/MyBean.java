@@ -23,7 +23,7 @@ public class MyBean {
            throw new Exception("===> Exception created");
         } else {
             logger.info(">>>> Exception created for : " + payment);
-            throw new MyFunctionalException2(">>>> MyFunctionalException created.  Unknown currency...");
+            throw new MyFunctionalException2(">>>> MyFunctionalException2 created.  Unknown currency...");
          } 
 
     }
